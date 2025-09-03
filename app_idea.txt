@@ -1,9 +1,3 @@
-Got it — you want a **React-based app** (web-first, potentially later wrapped for mobile via React Native/Expo), and you want to **allow betting in USD amounts** (like Betting on the Wedding), but the app itself will **not handle money transfers** — the bets and settlement are tracked in-app, while the actual money is exchanged between participants outside the platform.
-
-Here’s the updated requirements document, reflecting those changes:
-
----
-
 # **Product Requirements Document (PRD)**
 
 ## App: **Bet on the Event (working title)**
