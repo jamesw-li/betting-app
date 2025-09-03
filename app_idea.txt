@@ -1,0 +1,212 @@
+Got it — you want a **React-based app** (web-first, potentially later wrapped for mobile via React Native/Expo), and you want to **allow betting in USD amounts** (like Betting on the Wedding), but the app itself will **not handle money transfers** — the bets and settlement are tracked in-app, while the actual money is exchanged between participants outside the platform.
+
+Here’s the updated requirements document, reflecting those changes:
+
+---
+
+# **Product Requirements Document (PRD)**
+
+## App: **Bet on the Event (working title)**
+
+### Prepared by: \[Your Name]
+
+### Date: \[Insert Date]
+
+---
+
+## **1. Overview**
+
+This app enables groups of friends, family, or colleagues to **create prediction games and place bets in USD amounts** on events (weddings, birthdays, sports parties, vacations, corporate events, etc.).
+
+The app is a **React-based platform** where event organizers create an event, configure prediction categories/questions, and invite participants. Guests place **bets using USD** (declared inside the app) on outcomes. Importantly:
+
+* **The app does not process or hold real money.**
+* Bets are **tracked in-app for accountability and fun.**
+* **Settlement occurs outside the app** (e.g., Venmo, CashApp, PayPal, or in person).
+
+This makes the app a **social betting ledger + gamification tool** — not a gambling platform.
+
+---
+
+## **2. Objectives**
+
+* **Primary Objective:** Provide a lightweight, fun way for event guests to place bets and track predictions using real-world USD stakes.
+* **Secondary Objective:** Keep the focus on social fun and accountability without handling transactions.
+* **Tertiary Objective:** Scale to many event types beyond weddings (sports watch parties, holidays, birthdays, retreats).
+
+---
+
+## **3. Target Audience**
+
+* **Event Hosts:** Organizers looking to add interactive fun to events.
+* **Event Attendees:** Friends/family/coworkers who want to place small real-money bets in a social, transparent way.
+* **Casual Groups:** Groups of friends who want to use USD betting without the complexity/legal baggage of sportsbooks.
+
+---
+
+## **4. Use Cases**
+
+1. **Wedding:** Guests bet \$10 each on whether the groom will cry, or on how long the first speech will last.
+2. **Birthday:** Friends bet \$5 on which bar the group ends up at after dinner.
+3. **Corporate Retreat:** Team bets \$20 pool on which team wins a scavenger hunt.
+4. **Sports Party:** Guests bet \$10 on the final score or MVP of the game.
+
+---
+
+## **5. Core Features & Requirements**
+
+### 5.1. **Event Creation**
+
+* Host creates an event: title, date/time, description.
+* Host sets **currency = USD** (default, no other currencies in MVP).
+* Host adds prediction questions with bet parameters.
+* Host can invite participants via shareable link, event code, or email.
+
+### 5.2. **Prediction/Bet Question Types**
+
+* **Multiple Choice:** e.g., “Which team wins?”
+* **Yes/No:** e.g., “Will the bride cry?”
+* **Numeric Guess:** e.g., “What will the final score be?”
+* **Closest Wins:** numeric range, nearest answer wins pot.
+* **Free Text:** e.g., “What will the first song be?” (manual host scoring).
+
+### 5.3. **Bet Placement**
+
+* Guests join event and see all available predictions.
+* Guests select outcome and **enter bet amount in USD.**
+* App displays potential payout based on pool or odds (set by host).
+* Bets are locked once cutoff time hits.
+
+### 5.4. **Scoring & Results**
+
+* **Automatic scoring** (for defined multiple-choice, yes/no).
+* **Manual scoring** (host determines winner for subjective questions).
+* App shows who won each bet, winnings owed, and final leaderboard.
+* Guests are reminded to **settle outside the app** (Venmo, CashApp, etc.).
+
+### 5.5. **Settlement (External)**
+
+* App explicitly states: *“This platform does not transfer money. Please settle bets with your group directly (e.g., Venmo, PayPal, cash).”*
+* Guests can mark bets as “settled” in the app for record-keeping.
+* Optional: Add **payment handles** (Venmo ID, PayPal email, etc.) to profiles for easy settlement.
+
+### 5.6. **Leaderboard & Engagement**
+
+* **Leaderboard**: Tracks total winnings/losses per participant.
+* **History:** Guests can see their past bets and performance.
+* **Chat/Comments:** Per-event discussion thread.
+* **Notifications:** Reminders for bets, results, and settlement.
+
+### 5.7. **Host Tools**
+
+* Event dashboard: add/edit questions, manage participants, lock betting.
+* Set rules: min/max bet amount, odds, cutoff times.
+* Export results (CSV/PDF) for sharing post-event.
+
+---
+## **6. Technical Requirements (Bolt.new Focused)**
+
+### 6.1. **Frontend (Bolt + React)**
+
+* **Framework:** React + TypeScript (Bolt.new default).
+* **UI Styling:** TailwindCSS + shadcn/ui (Bolt ships with Tailwind pre-configured).
+* **Routing:** React Router or Next.js (Bolt supports both, but Next.js preferred for SSR).
+* **State Management:** React Query (TanStack Query) for API calls & cache sync.
+* **Form Handling:** React Hook Form for bets, event creation, and scoring.
+* **Realtime Leaderboard:** Socket.IO or Supabase Realtime integration.
+* **Component Architecture:** Modular, Bolt-style: small composable components (`/components`, `/features`).
+
+### 6.2. **Backend (Bolt API Layer)**
+
+* **Language/Framework:** Node.js + Express (Bolt supports generating routes quickly).
+* **ORM & DB:** Prisma + PostgreSQL (Bolt integrates with Supabase, Neon, or Railway for hosting DB).
+* **Authentication:** Clerk/Auth.js for user login (Google, Apple, email/password).
+* **APIs:** REST or GraphQL (Bolt works best with REST in MVP).
+* **Bet Tracking:**
+
+  * Event CRUD (create, read, update, delete).
+  * Bet CRUD (create bet, lock bet, update results).
+  * Leaderboard queries.
+
+### 6.3. **Database Schema (Prisma)**
+
+* **Users Table:** id, name, email, auth\_provider, venmo/paypal handle (optional).
+* **Events Table:** id, hostId, title, description, date, rules.
+* **Questions Table:** id, eventId, question text, type (MC, Y/N, numeric, free-text).
+* **Bets Table:** id, userId, questionId, chosenAnswer, betAmount, status (pending/won/lost).
+* **Results Table:** id, questionId, winningAnswer, settledBy (hostId).
+
+### 6.4. **Hosting & Deployment**
+
+* **Frontend (React/Next.js):** Vercel (fast deployment, good with Bolt).
+* **Backend API:** Railway/Render (or serverless functions inside Vercel).
+* **Database:** Neon/Supabase (serverless PostgreSQL).
+* **Realtime:** Socket.IO deployed with backend, or Supabase channels for live updates.
+
+### 6.5. **Security & Legal**
+
+* **Disclaimer baked in:** “This app does not process payments. Bets are tracked for entertainment; settlement is outside this platform.”
+* **Auth:** JWT tokens managed by Clerk/Auth.js.
+* **Encryption:** HTTPS via Vercel/Cloudflare; data encrypted at rest in DB.
+* **Role-Based Access:**
+
+  * Hosts can create/score events.
+  * Guests can join/place bets.
+
+### 6.6. **CI/CD (Bolt Style)**
+
+* **Linting:** ESLint + Prettier (auto-configured by Bolt).
+* **Testing:** Jest + React Testing Library (unit/integration tests).
+* **Deployment Pipelines:** Auto-deploy via GitHub → Vercel/Railway.
+
+---
+
+## **7. Non-Functional Requirements**
+
+* **Performance:** <200ms average API response time.
+* **Availability:** 99.9% uptime.
+* **Scale:** Support up to 100,000 concurrent users.
+* **Usability:** Fully responsive on mobile browsers.
+* **Compliance:** Must clearly avoid being classified as gambling software by excluding payment functionality.
+
+---
+
+## **8. Monetization Strategy**
+
+* **Freemium:** Free for small events (up to 25 participants).
+* **Premium Subscription:** Unlock larger events, custom branding, analytics.
+* **White-label:** Corporate version for team-building events.
+* **Optional Add-ons:** Paid access to advanced prediction types, branded event pages.
+
+---
+
+## **9. Future Enhancements (Phase 2+)**
+
+* **Payment Linking (Outside App):** Easy settlement via pre-filled Venmo/PayPal links (still not processing money directly).
+* **AI Bet Suggestions:** Smart question generators for hosts.
+* **Group Pots:** Option to pool bets and split winnings automatically *tracked only*.
+* **Event Media Integration:** Tie results/questions to photos/videos.
+* **Historical Leaderboards:** Track stats across multiple events for recurring groups.
+
+---
+
+## **10. Risks & Dependencies**
+
+* **Legal Risk:** Misinterpretation as online gambling → mitigated by clear disclaimers and no money handling.
+* **User Risk:** Disputes over settlement outside the app.
+* **Technical Risk:** Handling live bets at scale (requires robust WebSocket infra).
+* **Adoption Risk:** Convincing users to use an app that tracks but doesn’t handle settlement.
+
+---
+
+## **11. Success Metrics**
+
+* **Adoption:** Number of events created per month.
+* **Betting Engagement:** Average bets placed per participant.
+* **Retention:** % of users returning for multiple events.
+* **Virality:** Average number of new users invited by each host.
+* **Revenue:** Subscription upgrades to premium tier.
+
+
+
+
