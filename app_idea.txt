@@ -1,10 +1,10 @@
 # **Product Requirements Document (PRD)**
 
-## App: **Bet on the Event (working title)**
+## App: **Bet On It**
 
-### Prepared by: \[Your Name]
+### Prepared by: James W. Li
 
-### Date: \[Insert Date]
+### Date: September 3, 2025
 
 ---
 
